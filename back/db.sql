@@ -1,6 +1,6 @@
 create table keywords(
     id serial primary key,
-    keyw []
+    keyw varchar(100)[]
 );
 
 create table intentions(
