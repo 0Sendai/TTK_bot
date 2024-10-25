@@ -6,12 +6,12 @@ create table keywords(
 create table intentions(
     id serial primary key,
     intention varchar(255),
-    keyword_id references keywords(id)
+    keyword_id integer references keywords(id)
 );
 
 create table additional_text(
     id serial primary key,
-    intention_id references intentions(id),
+    intention_id integer references intentions(id),
     add_text Text
 );
 
