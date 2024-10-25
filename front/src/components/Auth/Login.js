@@ -4,6 +4,7 @@ import { TextField, Button, Container, Typography, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
+import CryptoJS from 'crypto-js';  // crypto-js для хэширования
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -11,28 +12,40 @@ const Login = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
+    const [error, setError] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        if ((username === 'admin' && password === 'admin') ||
-            (username === 'editor' && password === 'editor')) {
+        setError('');
 
-            // Скрываем форму с анимацией
-            setIsVisible(false);
+        // Хэшируем пароль
+        const hashedPassword = CryptoJS.SHA256(password).toString();
 
-            // Ждем завершения анимации и выполняем переход
-            setTimeout(() => {
-                login(username === 'admin' ? 'admin' : 'editor');
-                navigate('/dashboard');
-            }, 500); // Задержка совпадает с продолжительностью анимации
-        } else {
-            alert('Неверные данные для входа');
+        try {
+            const response = await fetch('http://localhost:5000/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password: hashedPassword }),
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                setIsVisible(false);
+                setTimeout(() => {
+                    login(result.role);
+                    navigate('/dashboard');
+                }, 500);
+            } else {
+                setError(result.message);
+            }
+        } catch (err) {
+            setError('Ошибка при подключении к серверу');
         }
     };
 
     return (
         <Container maxWidth="xs">
-            {/* Анимация появления/исчезновения формы */}
             <motion.div
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: isVisible ? 1 : 0, y: isVisible ? 0 : -50 }}
@@ -60,6 +73,7 @@ const Login = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
+                        {error && <Typography color="error">{error}</Typography>}
                         <Button
                             type="submit"
                             fullWidth

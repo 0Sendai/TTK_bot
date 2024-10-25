@@ -1,69 +1,69 @@
 // src/components/Dashboard/UserManagement.js
-import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, List, ListItem, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Box, Typography, List, ListItem } from '@mui/material';
 
 const UserManagement = () => {
-    const [users, setUsers] = useState([
-        { id: 1, username: 'admin', role: 'admin' },
-        { id: 2, username: 'editor', role: 'editor' }
-    ]);
-    const [newUser, setNewUser] = useState({ username: '', role: 'editor' });
+    const [admins, setAdmins] = useState([]);
+    const [newAdmin, setNewAdmin] = useState({ admin_login: '', password: '', is_admin: false });
 
-    const addUser = () => {
-        setUsers([...users, { ...newUser, id: users.length + 1 }]);
-        setNewUser({ username: '', role: 'editor' });
-    };
+    // Получение списка администраторов
+    useEffect(() => {
+        fetch('http://localhost:5000/admins')
+            .then(response => response.json())
+            .then(data => setAdmins(data))
+            .catch(error => console.error("Error fetching admins:", error));
+    }, []);
 
-    const deleteUser = (id) => {
-        setUsers(users.filter((user) => user.id !== id));
+    // Добавление нового администратора
+    const addAdmin = async () => {
+        const response = await fetch('http://localhost:5000/admins', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newAdmin)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            setAdmins([...admins, { admin_login: newAdmin.admin_login, is_admin: newAdmin.is_admin }]);
+            setNewAdmin({ admin_login: '', password: '', is_admin: false });
+        }
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            <Box>
-                <Typography variant="h4" gutterBottom>
-                    Управление пользователями
-                </Typography>
-                <List>
-                    {users.map((user) => (
-                        <ListItem key={user.id} secondaryAction={
-                            <IconButton edge="end" aria-label="delete" onClick={() => deleteUser(user.id)}>
-                                <DeleteIcon />
-                            </IconButton>
-                        }>
-                            {user.username} - {user.role}
-                        </ListItem>
-                    ))}
-                </List>
+        <Box>
+            <Typography variant="h4" gutterBottom>
+                Управление администраторами
+            </Typography>
+            <List>
+                {admins.map((admin) => (
+                    <ListItem key={admin.id}>
+                        {admin.admin_login} - {admin.is_admin ? "Администратор" : "Пользователь"}
+                    </ListItem>
+                ))}
+            </List>
 
-                <Typography variant="h5" gutterBottom>
-                    Добавить пользователя
-                </Typography>
-                <TextField
-                    label="Имя пользователя"
-                    value={newUser.username}
-                    onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                    fullWidth
-                    margin="normal"
-                />
-                <TextField
-                    label="Роль"
-                    value={newUser.role}
-                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                    fullWidth
-                    margin="normal"
-                />
-                <Button variant="contained" color="primary" onClick={addUser} sx={{ mt: 2 }}>
-                    Добавить
-                </Button>
-            </Box>
-        </motion.div>
+            <Typography variant="h5" gutterBottom>
+                Добавить администратора
+            </Typography>
+            <TextField
+                label="Логин"
+                value={newAdmin.admin_login}
+                onChange={(e) => setNewAdmin({ ...newAdmin, admin_login: e.target.value })}
+                fullWidth
+                margin="normal"
+            />
+            <TextField
+                label="Пароль"
+                type="password"
+                value={newAdmin.password}
+                onChange={(e) => setNewAdmin({ ...newAdmin, password: e.target.value })}
+                fullWidth
+                margin="normal"
+            />
+            <Button variant="contained" color="primary" onClick={addAdmin} sx={{ mt: 2 }}>
+                Добавить
+            </Button>
+        </Box>
     );
 };
 
