@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, List, ListItem, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { motion } from 'framer-motion';
 
 const UserManagement = () => {
     const [users, setUsers] = useState([
@@ -20,43 +21,49 @@ const UserManagement = () => {
     };
 
     return (
-        <Box>
-            <Typography variant="h4" gutterBottom>
-                Управление пользователями
-            </Typography>
-            <List>
-                {users.map((user) => (
-                    <ListItem key={user.id} secondaryAction={
-                        <IconButton edge="end" aria-label="delete" onClick={() => deleteUser(user.id)}>
-                            <DeleteIcon />
-                        </IconButton>
-                    }>
-                        {user.username} - {user.role}
-                    </ListItem>
-                ))}
-            </List>
+        <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+        >
+            <Box>
+                <Typography variant="h4" gutterBottom>
+                    Управление пользователями
+                </Typography>
+                <List>
+                    {users.map((user) => (
+                        <ListItem key={user.id} secondaryAction={
+                            <IconButton edge="end" aria-label="delete" onClick={() => deleteUser(user.id)}>
+                                <DeleteIcon />
+                            </IconButton>
+                        }>
+                            {user.username} - {user.role}
+                        </ListItem>
+                    ))}
+                </List>
 
-            <Typography variant="h5" gutterBottom>
-                Добавить пользователя
-            </Typography>
-            <TextField
-                label="Имя пользователя"
-                value={newUser.username}
-                onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-                fullWidth
-                margin="normal"
-            />
-            <TextField
-                label="Роль"
-                value={newUser.role}
-                onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-                fullWidth
-                margin="normal"
-            />
-            <Button variant="contained" color="primary" onClick={addUser}>
-                Добавить
-            </Button>
-        </Box>
+                <Typography variant="h5" gutterBottom>
+                    Добавить пользователя
+                </Typography>
+                <TextField
+                    label="Имя пользователя"
+                    value={newUser.username}
+                    onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
+                    fullWidth
+                    margin="normal"
+                />
+                <TextField
+                    label="Роль"
+                    value={newUser.role}
+                    onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
+                    fullWidth
+                    margin="normal"
+                />
+                <Button variant="contained" color="primary" onClick={addUser} sx={{ mt: 2 }}>
+                    Добавить
+                </Button>
+            </Box>
+        </motion.div>
     );
 };
 

@@ -1,13 +1,17 @@
 // src/pages/LoginPage.js
 import React from 'react';
+import { Container } from '@mui/material';
+import Header from '../components/Header';
 import Login from '../components/Auth/Login';
 
-const LoginPage = () => {
+const LoginPage = ({ toggleTheme, isDarkMode }) => {
     return (
-        <div>
-            <h1>Административная панель</h1>
-            <Login />
-        </div>
+        <>
+            <Header toggleTheme={toggleTheme} isDarkMode={isDarkMode} isAuthPage={true} />
+            <Container maxWidth="xs">
+                <Login />
+            </Container>
+        </>
     );
 };
 

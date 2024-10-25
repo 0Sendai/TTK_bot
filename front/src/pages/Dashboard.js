@@ -7,7 +7,7 @@ import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 import { Box } from '@mui/material';
 
-const Dashboard = () => {
+const Dashboard = ({ toggleTheme }) => {
     const { auth } = useAuth();
 
     if (!auth.isAuthenticated) {
@@ -16,7 +16,7 @@ const Dashboard = () => {
 
     return (
         <Box>
-            <Header />
+            <Header toggleTheme={toggleTheme} isDarkMode={auth.role === 'dark'} />
             <Box p={3}>
                 <Routes>
                     <Route path="intents" element={<IntentManagement />} />
