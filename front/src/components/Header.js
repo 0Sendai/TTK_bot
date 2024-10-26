@@ -4,6 +4,7 @@ import { AppBar, Toolbar, Typography, Button, IconButton, Box } from '@mui/mater
 import { LightMode, DarkMode } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logo from '../assets/logo.png';
 
 const Header = ({ toggleTheme, isDarkMode, isAuthPage }) => {
     const { auth, logout } = useAuth();
@@ -11,9 +12,14 @@ const Header = ({ toggleTheme, isDarkMode, isAuthPage }) => {
     return (
         <AppBar position="static">
             <Toolbar>
-                <Typography variant="h6" sx={{ flexGrow: 1 }}>
-                    Админ-панель
-                </Typography>
+                {/* Логотип и надпись "Админ-панель" */}
+                <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                    <img src={logo} alt="Company Logo" style={{ width: 120, height: 40, marginRight: 10 }} />
+                    <Typography variant="h6">
+                        Админ-панель
+                    </Typography>
+                </Box>
+
                 <Box sx={{ display: 'flex', gap: 2 }}>
                     {/* Кнопки отображаются только если это не HomePage и не LoginPage */}
                     {!isAuthPage && (
