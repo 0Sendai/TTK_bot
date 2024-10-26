@@ -22,7 +22,7 @@ const Login = () => {
         const hashedPassword = CryptoJS.SHA256(password).toString();
 
         try {
-            const response = await fetch('http://localhost:5000/login', {
+            const response = await fetch('http://185.105.109.24:5000/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password: hashedPassword }),

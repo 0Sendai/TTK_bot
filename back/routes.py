@@ -31,7 +31,7 @@ async def admins_post(request: web.Request) -> web.json_response:
     db = request.app[db_key]
     data = await request.json()
     admin = AdminRecord(username=data['admin_login'],
-                        password=data['admin_password'],
+                        password=data['password'],
                         is_admin=True)
     try:
         await db.new_admin(admin)
@@ -76,4 +76,4 @@ def init_app() -> web.Application:
     for route in list(app.router.routes()):
         cors.add(route)
 
-    return app(env) 
+    return app
