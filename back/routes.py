@@ -15,6 +15,12 @@ async def login(request: web.Request) -> web.Response:
 
     return web.json_response({'success': False})
 
+@routes.get('/admins')
+async def admins(request: web.Request) -> web.Response:
+    db = request.app[db_key]
+    data = db.fetch('SELECT (admin_login,is_admin) FROM admins')
+    return web.json_response(data)
+
 
 def init_app() -> web.Application:
     app = web.Application()
