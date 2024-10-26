@@ -4,12 +4,12 @@ import { TextField, Button, Container, Typography, Paper } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { motion } from 'framer-motion';
-import CryptoJS from 'crypto-js';  // crypto-js для хэширования
+import CryptoJS from 'crypto-js';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { setAuth } = useAuth();  // Обновляем для использования setAuth из контекста
+    const { setAuth } = useAuth();
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
     const [error, setError] = useState('');
@@ -32,10 +32,8 @@ const Login = () => {
 
             if (result.success) {
                 setIsVisible(false);
-
-                // Обновляем контекст с аутентификацией, ролью и именем пользователя
-                setAuth({ isAuthenticated: true, role: result.role, user: username });
-
+                // Сохраняем состояние с булевым значением is_admin
+                setAuth({ isAuthenticated: true, is_admin: result.is_admin, user: username });
                 setTimeout(() => {
                     navigate('/dashboard');
                 }, 500);

@@ -27,7 +27,8 @@ const Header = ({ toggleTheme, isDarkMode, isAuthPage }) => {
                             <Button color="inherit" component={Link} to="/dashboard/intents">
                                 Настройки намерений
                             </Button>
-                            {auth.role === 'admin' && (
+                            {/* Условный рендеринг кнопки для администратора */}
+                            {auth.is_admin && (
                                 <Button color="inherit" component={Link} to="/dashboard/users">
                                     Управление пользователями
                                 </Button>
