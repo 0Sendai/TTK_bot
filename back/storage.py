@@ -56,17 +56,17 @@ class PGDatabase:
             database=db_name
         )
 
-    async def auth_admin(self, record: AdminRecord) -> bool:
+    async def auth_admin(self, record: AdminRecord) -> tuple(bool,bool):
         if not self.con: raise DBError
         data = await self.con.fetch(
-            'SELECT admin_password from admins WHERE admin_login=$1',
+            'SELECT (admin_password, is_admin) from admins WHERE admin_login=$1',
             record.username)
 
         if not data: raise DBError
         if data[0]['admin_password'] == record.password:
-            return True
+            return (True,data[0]['is_admin'])
 
-        return False
+        return (False,False)
 
     async def get_admins(self) -> Iterable[AdminRecord]:
         if not self.con: raise DBError
