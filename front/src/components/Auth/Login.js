@@ -9,7 +9,7 @@ import CryptoJS from 'crypto-js';  // crypto-js для хэширования
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const { login } = useAuth();
+    const { setAuth } = useAuth();  // Обновляем для использования setAuth из контекста
     const navigate = useNavigate();
     const [isVisible, setIsVisible] = useState(true);
     const [error, setError] = useState('');
@@ -25,15 +25,18 @@ const Login = () => {
             const response = await fetch('http://localhost:5000/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: username, password: hashedPassword }),
+                body: JSON.stringify({ username, password: hashedPassword }),
             });
 
             const result = await response.json();
 
             if (result.success) {
                 setIsVisible(false);
+
+                // Обновляем контекст с аутентификацией, ролью и именем пользователя
+                setAuth({ isAuthenticated: true, role: result.role, user: username });
+
                 setTimeout(() => {
-                    login(result.role);
                     navigate('/dashboard');
                 }, 500);
             } else {
