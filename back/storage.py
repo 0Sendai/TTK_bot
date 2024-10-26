@@ -15,6 +15,11 @@ class AdminRecord:
     password: str
     is_admin: bool
 
+@dataclass(slots=True, frozen=True)
+class IntentionRecord:
+    intention: str
+    keywords: Iterable[str]
+
 class AdminEncoder(json.JSONEncoder):
     def default(self,o: AdminRecord):
         return asdict(o)
@@ -27,16 +32,16 @@ class Database(Protocol):
     def auth_admin(self, record: AdminRecord) -> None:
         raise NotImplementedError
 
-    def get_admins(self, record: AdminRecord) -> None:
+    def get_admins(self) -> None:
         raise NotImplementedError
 
     def new_admin(self, record: AdminRecord) -> None:
         raise NotImplementedError
 
-    def get_intentions(self, record: AdminRecord) -> None:
+    def get_intentions(self) -> None:
         raise NotImplementedError
 
-    def new_intention(self, record: AdminRecord) -> None:
+    def new_intention(self,) -> None:
         raise NotImplementedError
 
 
@@ -74,6 +79,22 @@ class PGDatabase:
                                  is_admin=row[0][1],
                                 password=None)
             response.append(json.dumps(admin, cls=AdminEncoder))
+        return response
+    
+    async def get_intentions(self) -> Iterable[IntentionRecord]:
+        if not self.con: raise DBError
+        data = self.con.fetch('''select intention, keyw from intentions right join 
+                              keywords on intentions.keyword_id = keywords.id;''')
+        if not data: raise DBError
+        response = []
+        for i in range(len(data)):
+            intent_text = data[i]['intention']
+            keywords = []
+            for value in data[i]['keyw']:
+                keywords.append(value)
+            intention = IntentionRecord(intention=intent_text,
+                                        keywords=keywords)
+            response.append(intention)
         return response
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
