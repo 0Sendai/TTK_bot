@@ -1,6 +1,7 @@
 import asyncpg
+import json
 from aiohttp.web import Application, AppKey
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Protocol, Iterable
 from enum import Enum
 from exceptions import DBError
@@ -14,6 +15,10 @@ class AdminRecord:
     password: str
     is_admin: bool
 
+class AdminEncoder(json.JSONEncoder):
+    def default(self,o: AdminRecord):
+        return asdict(o)
+
 class AdminFields(str, Enum):
     username = 'username'
     password = 'password'
@@ -21,16 +26,16 @@ class AdminFields(str, Enum):
 class Database(Protocol):
     def auth_admin(self, record: AdminRecord) -> None:
         raise NotImplementedError
-    
+
     def get_admins(self, record: AdminRecord) -> None:
         raise NotImplementedError
-    
+
     def new_admin(self, record: AdminRecord) -> None:
         raise NotImplementedError
-    
+
     def get_intentions(self, record: AdminRecord) -> None:
         raise NotImplementedError
-    
+
     def new_intention(self, record: AdminRecord) -> None:
         raise NotImplementedError
 
@@ -57,7 +62,7 @@ class PGDatabase:
             return True
 
         return False
-    
+
     async def get_admins(self) -> Iterable[AdminRecord]:
         if not self.con: raise DBError
         data = await self.con.fetch('SELECT (admin_login,is_admin) FROM admins')
@@ -65,9 +70,10 @@ class PGDatabase:
         response = []
 
         for row in data:
-            admin = AdminRecord(username=row['admin_login'],
-                                 is_admin=data['is_admin'])
-            response.append(admin)
+            admin = AdminRecord(username=row[0][0],
+                                 is_admin=row[0][1],
+                                password=None)
+            response.append(json.dumps(admin, cls=AdminEncoder))
         return response
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
