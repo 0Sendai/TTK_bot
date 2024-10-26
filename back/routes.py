@@ -18,7 +18,7 @@ async def login(request: web.Request) -> web.Response:
 @routes.get('/admins')
 async def admins(request: web.Request) -> web.Response:
     db = request.app[db_key]
-    data = db.fetch('SELECT (admin_login,is_admin) FROM admins')
+    data = await db.con.fetch('SELECT (admin_login,is_admin) FROM admins')
     return web.json_response(data)
 
 
