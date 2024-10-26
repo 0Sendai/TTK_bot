@@ -1,7 +1,7 @@
 import asyncpg
 from aiohttp.web import Application, AppKey
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Protocol, Iterable
 from enum import Enum
 from exceptions import DBError
 from config import DB_USER, DB_USER_PASS, DB_NAME
@@ -12,6 +12,7 @@ db_key = AppKey('db_key')
 class AdminRecord:
     username: str
     password: str
+    is_admin: bool
 
 class AdminFields(str, Enum):
     username = 'username'
@@ -19,6 +20,18 @@ class AdminFields(str, Enum):
 
 class Database(Protocol):
     def auth_admin(self, record: AdminRecord) -> None:
+        raise NotImplementedError
+    
+    def get_admins(self, record: AdminRecord) -> None:
+        raise NotImplementedError
+    
+    def new_admin(self, record: AdminRecord) -> None:
+        raise NotImplementedError
+    
+    def get_intentions(self, record: AdminRecord) -> None:
+        raise NotImplementedError
+    
+    def new_intention(self, record: AdminRecord) -> None:
         raise NotImplementedError
 
 
@@ -44,7 +57,18 @@ class PGDatabase:
             return True
 
         return False
+    
+    async def get_admins(self) -> Iterable[AdminRecord]:
+        if not self.con: raise DBError
+        data = await self.con.fetch('SELECT (admin_login,is_admin) FROM admins')
+        if not data: raise DBError
+        response = []
 
+        for row in data:
+            admin = AdminRecord(username=row['admin_login'],
+                                 is_admin=data['is_admin'])
+            response.append(admin)
+        return response
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
     db = PGDatabase()
