@@ -80,10 +80,10 @@ class PGDatabase:
                                 password=None)
             response.append(json.dumps(admin, cls=RecordEncoder))
         return response
-    
+
     async def get_intentions(self) -> Iterable[IntentionRecord]:
         if not self.con: raise DBError
-        data = await self.con.fetch('''select intention, keyw from intentions right join 
+        data = await self.con.fetch('''select intention, keyw from intentions right join
                               keywords on intentions.keyword_id = keywords.id;''')
         if not data: raise DBError
         response = []
@@ -97,21 +97,20 @@ class PGDatabase:
             response.append(json.dumps(intention, cls=RecordEncoder,
                                        ensure_ascii=False))
         return response
-    
+
     async def new_intention(self, record: IntentionRecord) -> None:
         if not self.con: raise DBError
         try:
             id = await self.con.fetchrow(
-                '''INSERT INTO keywords keyw VALUES ($1) RETURNING id''',
+                '''INSERT INTO keywords (keyw) VALUES ($1) RETURNING id''',
                 record.keywords
             )
             await self.con.execute(
                 '''INSERT INTO intentions (intention, keyword_id) VALUES ($1, $2)''',
-                record.intention, id[0]
+                record.intention, id[0]            
             )
-        except:
-            assert DBError
-        
+        except Exception as e:
+            print(e)
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
     db = PGDatabase()

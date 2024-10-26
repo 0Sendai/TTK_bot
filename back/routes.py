@@ -40,15 +40,6 @@ async def intentions_post(request: web.Request) -> web.json_response:
     )
     try:
         await db.new_intention(intention)
-        # id = await db.con.fetchrow(
-        #     '''INSERT INTO keywords keyw VALUES ($1) RETURNING id''',
-        #     data['keywords']
-        # )
-        # await db.con.execute(
-        #     '''INSERT INTO intentions (intention, keyword_id) VALUES ($1, $2)''',
-        #     data['intention'], id
-        # )
-
     except Exception as e:
         print(e)
         return web.json_response({'success': False})
