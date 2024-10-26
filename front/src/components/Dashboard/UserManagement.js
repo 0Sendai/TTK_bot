@@ -8,15 +8,17 @@ const UserManagement = () => {
 
     // Получение списка администраторов
     useEffect(() => {
-        fetch('http://localhost:5000/admins')
-            .then(response => response.json())
-            .then(data => setAdmins(data))
+        fetch('http://185.105.109.24:5000/admins')
+            .then((response) => {return response.json();})
+            .then(data => {
+                    console.log(data);
+                    setAdmins(data)})
             .catch(error => console.error("Error fetching admins:", error));
     }, []);
 
     // Добавление нового администратора
     const addAdmin = async () => {
-        const response = await fetch('http://localhost:5000/admins', {
+        const response = await fetch('http://185.105.109.24:5000/admins', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(newAdmin)

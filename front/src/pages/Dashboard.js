@@ -20,9 +20,9 @@ const Dashboard = ({ toggleTheme }) => {
             <Box p={3}>
                 <Routes>
                     <Route path="intents" element={<IntentManagement />} />
-                    {auth.role === 'admin' && (
+            {/*{auth.role === 'admin' && (*/}
                         <Route path="users" element={<UserManagement />} />
-                    )}
+
                 </Routes>
             </Box>
         </Box>

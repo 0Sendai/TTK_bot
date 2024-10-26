@@ -75,27 +75,25 @@ class PGDatabase:
         response = []
 
         for row in data:
-            admin = AdminRecord(username=row[0][0],
-                                 is_admin=row[0][1],
-                                password=None)
-            response.append(json.dumps(admin, cls=RecordEncoder))
+            login = row[0][0]
+            if not login: continue
+            admin = {'admin_login': login, 'is_admin': row[0][1]}
+            response.append(admin)
         return response
 
-    async def get_intentions(self) -> Iterable[IntentionRecord]:
+
+    async def get_intentions(self) -> Iterable[dict]:
         if not self.con: raise DBError
         data = await self.con.fetch('''select intention, keyw from intentions right join
                               keywords on intentions.keyword_id = keywords.id;''')
         if not data: raise DBError
+
         response = []
-        for i in range(len(data)):
-            intent_text = data[i]['intention']
-            keywords = []
-            for value in data[i]['keyw']:
-                keywords.append(value)
-            intention = IntentionRecord(intention=intent_text,
-                                        keywords=keywords)
-            response.append(json.dumps(intention, cls=RecordEncoder,
-                                       ensure_ascii=False))
+        for row in data:
+            int_text = row['intention']
+            if not int_text: continue
+            intent = {'intention': int_text, 'keywords': row['keyw']}
+            response.append(intent)
         return response
 
     async def new_intention(self, record: IntentionRecord) -> None:

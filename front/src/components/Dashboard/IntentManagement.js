@@ -8,15 +8,19 @@ const IntentManagement = () => {
 
     // Получение списка намерений
     useEffect(() => {
-        fetch('http://localhost:5000/intentions')
-            .then(response => response.json())
-            .then(data => setIntentions(data))
+        fetch('http://185.105.109.24:5000/intentions')
+            .then((response) => {
+                    console.log(response);
+                    return response.json();})
+            .then((data) => {
+                    console.log(data);
+                    setIntentions(data);})
             .catch(error => console.error("Error fetching intentions:", error));
     }, []);
 
     // Добавление нового намерения
     const addIntent = async () => {
-        const response = await fetch('http://localhost:5000/intentions', {
+        const response = await fetch('http://185.105.109.24:5000/intentions', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

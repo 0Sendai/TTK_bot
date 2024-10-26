@@ -63,4 +63,4 @@ def init_app() -> web.Application:
     for route in list(app.router.routes()):
         cors.add(route)
 
-    return app
+    return app(env) 

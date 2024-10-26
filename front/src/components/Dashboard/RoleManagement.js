@@ -1,7 +1,7 @@
 // src/components/Dashboard/RoleManagement.js
 import React, { useState } from 'react';
 
-const RoleManagement = ({ users, updateUserRole }) => {
+const RoleManagement = () => {
     const [selectedUser, setSelectedUser] = useState('');
     const [newRole, setNewRole] = useState('editor');
 
