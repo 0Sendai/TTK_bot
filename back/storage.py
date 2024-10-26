@@ -4,8 +4,8 @@ from aiohttp.web import Application, AppKey
 from dataclasses import dataclass, asdict
 from typing import Protocol, Iterable
 from enum import Enum
-from exceptions import DBError
-from config import DB_USER, DB_USER_PASS, DB_NAME
+from back.exceptions import DBError
+from back.config import DB_USER, DB_USER_PASS, DB_NAME
 
 db_key = AppKey('db_key')
 
@@ -120,6 +120,13 @@ class PGDatabase:
             )
         except Exception as e:
             print(e)
+
+    async def get_keywords(self) -> Iterable[Iterable[str]]:
+        if not self.con: raise DBError
+        data = await self.con.fetch(
+            '''SELECT (keyw) FROM keywords'''
+        )
+        return data
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
     db = PGDatabase()

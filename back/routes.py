@@ -1,6 +1,6 @@
 from aiohttp import web
 import aiohttp_cors
-from storage import AdminRecord, IntentionRecord, db_key
+from back.storage import AdminRecord, IntentionRecord, db_key
 
 routes = web.RouteTableDef()
 
