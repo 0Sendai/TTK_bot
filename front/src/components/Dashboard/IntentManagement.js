@@ -1,68 +1,71 @@
 // src/components/Dashboard/IntentManagement.js
-import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, List, ListItem, IconButton } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { TextField, Button, Box, Typography, List, ListItem } from '@mui/material';
 
 const IntentManagement = () => {
-    const [intents, setIntents] = useState([
-        { id: 1, intent: 'Смена тарифа', keywords: ['тариф', 'смена'] }
-    ]);
-    const [newIntent, setNewIntent] = useState({ intent: '', keywords: '' });
+    const [intentions, setIntentions] = useState([]);
+    const [newIntent, setNewIntent] = useState({ intention: '', keywords: '' });
 
-    const addIntent = () => {
-        setIntents([...intents, { ...newIntent, id: intents.length + 1 }]);
-        setNewIntent({ intent: '', keywords: '' });
-    };
+    // Получение списка намерений
+    useEffect(() => {
+        fetch('http://localhost:5000/intentions')
+            .then(response => response.json())
+            .then(data => setIntentions(data))
+            .catch(error => console.error("Error fetching intentions:", error));
+    }, []);
 
-    const deleteIntent = (id) => {
-        setIntents(intents.filter((intent) => intent.id !== id));
+    // Добавление нового намерения
+    const addIntent = async () => {
+        const response = await fetch('http://localhost:5000/intentions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                intention: newIntent.intention,
+                keywords: newIntent.keywords.split(',')
+            })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            setIntentions([...intentions, { ...newIntent, keywords: newIntent.keywords.split(',') }]);
+            setNewIntent({ intention: '', keywords: '' });
+        }
     };
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-        >
-            <Box>
-                <Typography variant="h4" gutterBottom>
-                    Управление намерениями
-                </Typography>
-                <List>
-                    {intents.map((intent) => (
-                        <ListItem key={intent.id} secondaryAction={
-                            <IconButton edge="end" aria-label="delete" onClick={() => deleteIntent(intent.id)}>
-                                <DeleteIcon />
-                            </IconButton>
-                        }>
-                            {intent.intent} - ключевые слова: {intent.keywords.join(', ')}
-                        </ListItem>
-                    ))}
-                </List>
+        <Box>
+            <Typography variant="h4" gutterBottom>
+                Управление намерениями
+            </Typography>
+            <List>
+                {intentions.map((intent) => (
+                    <ListItem key={intent.id}>
+                        {intent.intention} - ключевые слова: {intent.keywords.join(', ')}
+                    </ListItem>
+                ))}
+            </List>
 
-                <Typography variant="h5" gutterBottom>
-                    Добавить намерение
-                </Typography>
-                <TextField
-                    label="Намерение"
-                    value={newIntent.intent}
-                    onChange={(e) => setNewIntent({ ...newIntent, intent: e.target.value })}
-                    fullWidth
-                    margin="normal"
-                />
-                <TextField
-                    label="Ключевые слова"
-                    value={newIntent.keywords}
-                    onChange={(e) => setNewIntent({ ...newIntent, keywords: e.target.value.split(',') })}
-                    fullWidth
-                    margin="normal"
-                />
-                <Button variant="contained" color="primary" onClick={addIntent} sx={{ mt: 2 }}>
-                    Добавить
-                </Button>
-            </Box>
-        </motion.div>
+            <Typography variant="h5" gutterBottom>
+                Добавить намерение
+            </Typography>
+            <TextField
+                label="Намерение"
+                value={newIntent.intention}
+                onChange={(e) => setNewIntent({ ...newIntent, intention: e.target.value })}
+                fullWidth
+                margin="normal"
+            />
+            <TextField
+                label="Ключевые слова"
+                value={newIntent.keywords}
+                onChange={(e) => setNewIntent({ ...newIntent, keywords: e.target.value })}
+                fullWidth
+                margin="normal"
+            />
+            <Button variant="contained" color="primary" onClick={addIntent} sx={{ mt: 2 }}>
+                Добавить
+            </Button>
+        </Box>
     );
 };
 

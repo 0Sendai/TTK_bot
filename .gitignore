@@ -1,4 +1,4 @@
-config.py
+back/config.py
 __pycache__
 env/
 front/build/
