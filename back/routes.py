@@ -9,7 +9,7 @@ routes = web.RouteTableDef()
 async def login(request: web.Request) -> web.Response:
     db = request.app[db_key]
     data = await request.json()
-    user = AdminRecord(username=data['username'], 
+    user = AdminRecord(username=data['username'],
                        password=data['password'],
                        is_admin=None)
     response = await db.auth_admin(user)
@@ -17,7 +17,7 @@ async def login(request: web.Request) -> web.Response:
         if response[1]:
             return web.json_response({'success': True, 'is_admin': True})
         return web.json_response({'success': True, 'is_admin': False})
-        
+
     return web.json_response({'success': False})
 
 @routes.get('/admins')

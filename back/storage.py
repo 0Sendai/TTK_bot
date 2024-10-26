@@ -56,15 +56,15 @@ class PGDatabase:
             database=db_name
         )
 
-    async def auth_admin(self, record: AdminRecord) -> tuple(bool,bool):
+    async def auth_admin(self, record: AdminRecord) -> tuple[bool,bool]:
         if not self.con: raise DBError
-        data = await self.con.fetch(
+        data = await self.con.fetchrow(
             'SELECT (admin_password, is_admin) from admins WHERE admin_login=$1',
             record.username)
 
         if not data: raise DBError
-        if data[0]['admin_password'] == record.password:
-            return (True,data[0]['is_admin'])
+        if data[0][0] == record.password:
+            return (True,data[0][1])
 
         return (False,False)
 
@@ -107,7 +107,7 @@ class PGDatabase:
             )
             await self.con.execute(
                 '''INSERT INTO intentions (intention, keyword_id) VALUES ($1, $2)''',
-                record.intention, id[0]            
+                record.intention, id[0]
             )
         except Exception as e:
             print(e)
