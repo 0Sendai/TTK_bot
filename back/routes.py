@@ -27,18 +27,6 @@ async def admins_get(request: web.Request) -> web.json_response:
 @routes.get('/intentions')
 async def intentions_get(request: web.Request) -> web.json_response:
     db = request.app[db_key]
-    # data = await db.con.fetch(
-    #     '''select intention, keyw from intentions right join keywords on intentions.keyword_id = keywords.id;'''
-    # )
-    # res = []
-    # for i in range(len(data)):
-    #     tmp = dict()
-    #     tmp['intention'] = data[i]['intention']
-    #     keywords = []
-    #     for value in data[i]['keyw']:
-    #         keywords.append(value)
-    #     tmp['keywords'] = keywords
-    #     res.append(tmp)
     response = await db.get_intentions()
     return web.json_response(response)
 

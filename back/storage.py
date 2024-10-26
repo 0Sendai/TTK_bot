@@ -20,8 +20,8 @@ class IntentionRecord:
     intention: str
     keywords: Iterable[str]
 
-class AdminEncoder(json.JSONEncoder):
-    def default(self,o: AdminRecord):
+class RecordEncoder(json.JSONEncoder):
+    def default(self,o):
         return asdict(o)
 
 class AdminFields(str, Enum):
@@ -78,12 +78,12 @@ class PGDatabase:
             admin = AdminRecord(username=row[0][0],
                                  is_admin=row[0][1],
                                 password=None)
-            response.append(json.dumps(admin, cls=AdminEncoder))
+            response.append(json.dumps(admin, cls=RecordEncoder))
         return response
     
     async def get_intentions(self) -> Iterable[IntentionRecord]:
         if not self.con: raise DBError
-        data = self.con.fetch('''select intention, keyw from intentions right join 
+        data = await self.con.fetch('''select intention, keyw from intentions right join 
                               keywords on intentions.keyword_id = keywords.id;''')
         if not data: raise DBError
         response = []
@@ -94,7 +94,8 @@ class PGDatabase:
                 keywords.append(value)
             intention = IntentionRecord(intention=intent_text,
                                         keywords=keywords)
-            response.append(intention)
+            response.append(json.dumps(intention, cls=RecordEncoder,
+                                       ensure_ascii=False))
         return response
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
