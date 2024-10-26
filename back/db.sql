@@ -34,7 +34,10 @@ INSERT INTO keywords(keyw) VALUES
 INSERT INTO intentions(intention, keyword_id) VALUES
 ('изменить тариф', 1),
 ('подключить услугу', 2),
-('заключить договор', 3);
+('заключить договор', 3),
+('удалить услугу', 4),
+('подключить тариф', 5),
+('поддержка', 6);
 
 INSERT INTO additional_text(add_text, intention_id) VALUES
 ('Для изменения тарифа пожалуйста, укажите желаемый тарифный план.', 1),
