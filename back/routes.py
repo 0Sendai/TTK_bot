@@ -26,6 +26,19 @@ async def admins_get(request: web.Request) -> web.json_response:
     response = await db.get_admins()
     return web.json_response(response)
 
+@routes.post('/admins')
+async def admins_post(request: web.Request) -> web.json_response:
+    db = request.app[db_key]
+    data = await request.json()
+    admin = AdminRecord(username=data['admin_login'],
+                        password=data['admin_password'],
+                        is_admin=True)
+    try:
+        await db.new_admin(admin)
+        return web.json_response({'success': True})
+    except:
+        return web.json_response({'success': False})
+
 
 @routes.get('/intentions')
 async def intentions_get(request: web.Request) -> web.json_response:

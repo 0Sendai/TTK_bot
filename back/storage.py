@@ -80,6 +80,17 @@ class PGDatabase:
             admin = {'admin_login': login, 'is_admin': row[0][1]}
             response.append(admin)
         return response
+    
+    async def new_admin(self, record: AdminRecord) -> None:
+         if not self.con: raise DBError
+         await self.con.execute(
+             '''INSERT INTO admins (admin_login, admin_password, is_admin)
+             VALUES ($1, $2, $3)''',
+             record.username,
+             record.password,
+             record.is_admin
+         )
+
 
 
     async def get_intentions(self) -> Iterable[dict]:
