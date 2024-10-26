@@ -1,6 +1,7 @@
 // src/components/Dashboard/UserManagement.js
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Box, Typography, List, ListItem } from '@mui/material';
+import CryptoJS from 'crypto-js';
 
 const UserManagement = () => {
     const [admins, setAdmins] = useState([]);
@@ -11,17 +12,24 @@ const UserManagement = () => {
         fetch('http://185.105.109.24:5000/admins')
             .then((response) => {return response.json();})
             .then(data => {
-                    console.log(data);
-                    setAdmins(data)})
+                console.log(data);
+                setAdmins(data)})
             .catch(error => console.error("Error fetching admins:", error));
     }, []);
 
     // Добавление нового администратора
     const addAdmin = async () => {
+        const hashedPassword = CryptoJS.SHA256(newAdmin.password).toString();
+
+        const adminData = {
+            ...newAdmin,
+            password: hashedPassword
+        };
+
         const response = await fetch('http://185.105.109.24:5000/admins', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(newAdmin)
+            body: JSON.stringify(adminData)
         });
 
         const result = await response.json();
