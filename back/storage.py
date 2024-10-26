@@ -20,7 +20,7 @@ class AdminFields(str, Enum):
 class Database(Protocol):
     def auth_admin(self, record: AdminRecord) -> None:
         raise NotImplementedError
-    
+
 
 class PGDatabase:
     def __init__(self) -> None:
@@ -37,20 +37,20 @@ class PGDatabase:
         if not self.con: raise DBError
         data = await self.con.fetch(
             'SELECT admin_password from admins WHERE admin_login=$1',
-            AdminRecord.username)
-        
+            record.username)
+
         if not data: raise DBError
-        if data[0]['admin_password'] == AdminRecord.password:
+        if data[0]['admin_password'] == record.password:
             return True
-        
+
         return False
-    
+
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
     db = PGDatabase()
     await db.connect(db_user=db_user, db_user_pass=db_user_pass,db_name=db_name)
     return db
-    
+
 async def add_db_to_context(app: Application) -> None:
     app[db_key] = await create_db(
         db_user=DB_USER,

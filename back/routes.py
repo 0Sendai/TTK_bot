@@ -1,19 +1,34 @@
 from aiohttp import web
-from storage import AdminRecord, AdminFields
+import aiohttp_cors
+from storage import AdminRecord, db_key
 
 routes = web.RouteTableDef()
+
 
 @routes.post('/login')
 async def login(request: web.Request) -> web.Response:
     db = request.app[db_key]
-    data = await request.post()
-    user = AdminRecord(data[AdminFields.username], data[AdminFields.password])
+    data = await request.json()
+    user = AdminRecord(data['username'], data['password'])
     if await db.auth_admin(user):
-        return web.Response(status=200)
+        return web.json_response({'success': True})
 
-    return web.Response(status=401)
+    return web.json_response({'success': False})
+
 
 def init_app() -> web.Application:
     app = web.Application()
     app.add_routes(routes)
+
+    cors = aiohttp_cors.setup(app, defaults={
+        "*": aiohttp_cors.ResourceOptions(
+            allow_credentials=True,
+            expose_headers="*",
+            allow_headers="*",
+        )
+    })
+
+    for route in list(app.router.routes()):
+        cors.add(route)
+
     return app
