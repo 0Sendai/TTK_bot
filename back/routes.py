@@ -45,6 +45,24 @@ async def intentions_get(request: web.Request) -> web.json_response:
         res.append(tmp)
     return web.json_response(res)
 
+@routes.post('/intentions')
+async def intentions_post(request: web.Request) -> web.json_response:
+    db = request.app[db_key]
+    data = await request.json()
+    try:
+        id = await db.con.fetchrow(
+            '''INSERT INTO keywords keyw VALUES ($1) RETURNING id''',
+            data['keywords']
+        )
+        await db.con.execute(
+            '''INSERT INTO intentions (intention, keyword_id) VALUES ($1, $2)''',
+            data['intention'], id
+        )
+    except Exception as e:
+        print(e)
+        return web.json_response({'success': False})
+    return web.json_response({'success': True})
+
 def init_app() -> web.Application:
     app = web.Application()
     app.add_routes(routes)
