@@ -97,6 +97,21 @@ class PGDatabase:
             response.append(json.dumps(intention, cls=RecordEncoder,
                                        ensure_ascii=False))
         return response
+    
+    async def new_intention(self, record: IntentionRecord) -> None:
+        if not self.con: raise DBError
+        try:
+            id = await self.con.fetchrow(
+                '''INSERT INTO keywords keyw VALUES ($1) RETURNING id''',
+                record.keywords
+            )
+            await self.con.execute(
+                '''INSERT INTO intentions (intention, keyword_id) VALUES ($1, $2)''',
+                record.intention, id[0]
+            )
+        except:
+            assert DBError
+        
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
     db = PGDatabase()

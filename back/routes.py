@@ -1,6 +1,6 @@
 from aiohttp import web
 import aiohttp_cors
-from storage import AdminRecord, db_key
+from storage import AdminRecord, IntentionRecord, db_key
 
 routes = web.RouteTableDef()
 
@@ -34,15 +34,21 @@ async def intentions_get(request: web.Request) -> web.json_response:
 async def intentions_post(request: web.Request) -> web.json_response:
     db = request.app[db_key]
     data = await request.json()
+    intention = IntentionRecord(
+        intention=data['intention'],
+        keywords=data['keywords']
+    )
     try:
-        id = await db.con.fetchrow(
-            '''INSERT INTO keywords keyw VALUES ($1) RETURNING id''',
-            data['keywords']
-        )
-        await db.con.execute(
-            '''INSERT INTO intentions (intention, keyword_id) VALUES ($1, $2)''',
-            data['intention'], id
-        )
+        await db.new_intention(intention)
+        # id = await db.con.fetchrow(
+        #     '''INSERT INTO keywords keyw VALUES ($1) RETURNING id''',
+        #     data['keywords']
+        # )
+        # await db.con.execute(
+        #     '''INSERT INTO intentions (intention, keyword_id) VALUES ($1, $2)''',
+        #     data['intention'], id
+        # )
+
     except Exception as e:
         print(e)
         return web.json_response({'success': False})
