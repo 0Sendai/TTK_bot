@@ -12,22 +12,20 @@ const Header = ({ toggleTheme, isDarkMode, isAuthPage }) => {
     return (
         <AppBar position="static">
             <Toolbar>
-                {/* Логотип и надпись "Админ-панель" */}
                 <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
                     <img src={logo} alt="Company Logo" style={{ width: 120, height: 40, marginRight: 10 }} />
-                    <Typography variant="h6">
-                        Админ-панель
-                    </Typography>
+                    <Typography variant="h6">Админ-панель</Typography>
                 </Box>
 
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                    {/* Кнопки отображаются только если это не HomePage и не LoginPage */}
                     {!isAuthPage && (
                         <>
+                            <Button color="inherit" component={Link} to="/dashboard/mailboxes">
+                                Управление почтовыми ящиками
+                            </Button>
                             <Button color="inherit" component={Link} to="/dashboard/intents">
                                 Настройки намерений
                             </Button>
-                            {/* Условный рендеринг кнопки для администратора */}
                             {auth.is_admin && (
                                 <Button color="inherit" component={Link} to="/dashboard/users">
                                     Управление пользователями
@@ -38,7 +36,6 @@ const Header = ({ toggleTheme, isDarkMode, isAuthPage }) => {
                             </Button>
                         </>
                     )}
-                    {/* Переключатель темы */}
                     <IconButton color="inherit" onClick={toggleTheme}>
                         {isDarkMode ? <LightMode /> : <DarkMode />}
                     </IconButton>
