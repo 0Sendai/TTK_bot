@@ -26,6 +26,12 @@ create table admins(
     admin_password varchar(64),
     is_admin boolean
 );
+
+create table mailboxes(
+    id serial primary key,
+    mailbox varchar (255)
+);
+
 INSERT INTO keywords(keyw) VALUES
 ('тариф', 'изменить тариф', 'тарифы', 'поменять тариф', 'тарифный план'),
 ('услуга', 'дополнительная услуга', 'услуги', 'подключить услугу', 'подключить дополнительную услугу'),

@@ -121,6 +121,22 @@ class PGDatabase:
         except Exception as e:
             print(e)
 
+    async def get_mailboxes(self) -> Iterable[dict]:
+        if not self.con: raise DBError
+        data = await self.con.fetch('''select mailbox from mailboxes''')
+        if not data: raise DBError
+
+        response = []
+        for row in data:
+            mail = {'email': row['mailbox']}
+            response.append(mail)
+        return response
+    
+    async def new_mailbox(self, mailbox: str) -> None:
+        if not self.con: raise DBError
+        await self.con.execute('''INSERT INTO mailboxes (mailbox) VALUES ($1)''', mailbox)
+        
+
     async def get_keywords(self) -> Iterable[Iterable[str]]:
         if not self.con: raise DBError
         data = await self.con.fetch(

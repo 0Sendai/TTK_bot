@@ -61,6 +61,22 @@ async def intentions_post(request: web.Request) -> web.json_response:
         return web.json_response({'success': False})
     return web.json_response({'success': True})
 
+@routes.get('/mailboxes')
+async def mailboxes_get(request: web.Request) -> web.json_response:
+    db = request.app[db_key]
+    response = await db.get_mailboxes()
+    return web.json_response(response)
+
+@routes.post('/mailboxes')
+async def mailboxes_post(request: web.Request, mailbox: str) -> web.json_response:
+    db = request.app[db_key]
+    data = request.json()
+    try:
+        await db.new_mailbox(data['email'])
+        return web.json_response({'success': True})
+    except:
+        return web.json_response({'success': False})
+    
 def init_app() -> web.Application:
     app = web.Application()
     app.add_routes(routes)
