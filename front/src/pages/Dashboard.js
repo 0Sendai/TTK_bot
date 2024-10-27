@@ -3,6 +3,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import UserManagement from '../components/Dashboard/UserManagement';
 import IntentManagement from '../components/Dashboard/IntentManagement';
+import MailboxManagement from '../components/Dashboard/MailboxManagement'; // Импортируем новый компонент
 import Header from '../components/Header';
 import { useAuth } from '../context/AuthContext';
 import { Box } from '@mui/material';
@@ -20,9 +21,8 @@ const Dashboard = ({ toggleTheme }) => {
             <Box p={3}>
                 <Routes>
                     <Route path="intents" element={<IntentManagement />} />
-            {/*{auth.role === 'admin' && (*/}
-                        <Route path="users" element={<UserManagement />} />
-
+                    <Route path="mailboxes" element={<MailboxManagement />} /> {/* Новый маршрут */}
+                    <Route path="users" element={<UserManagement />} />
                 </Routes>
             </Box>
         </Box>
