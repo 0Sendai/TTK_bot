@@ -91,8 +91,6 @@ class PGDatabase:
              record.is_admin
          )
 
-
-
     async def get_intentions(self) -> Iterable[dict]:
         if not self.con: raise DBError
         data = await self.con.fetch('''select intention, keyw from intentions right join
@@ -106,6 +104,15 @@ class PGDatabase:
             intent = {'intention': int_text, 'keywords': row['keyw']}
             response.append(intent)
         return response
+    
+    async def get_intention(self, id: int) -> dict:
+        if not self.con: raise DBError
+        data = await self.con.fetchrow(
+            '''SELECT id, intention FROM intentions WHERE keyword_id=$1''',
+            id
+        )
+        if not data: raise DBError
+        return data
 
     async def new_intention(self, record: IntentionRecord) -> None:
         if not self.con: raise DBError
@@ -121,6 +128,14 @@ class PGDatabase:
         except Exception as e:
             print(e)
 
+    async def get_additional_text(self, id: int) -> str:
+        if not self.con: raise DBError
+        data = await self.con.fetchrow(
+            '''SELECT add_text FROM additional_text WHERE intention_id=$1''',
+            id
+        )
+        return data[0]
+
     async def get_mailboxes(self) -> Iterable[dict]:
         if not self.con: raise DBError
         data = await self.con.fetch('''select mailbox from mailboxes''')
@@ -135,14 +150,24 @@ class PGDatabase:
     async def new_mailbox(self, mailbox: str) -> None:
         if not self.con: raise DBError
         await self.con.execute('''INSERT INTO mailboxes (mailbox) VALUES ($1)''', mailbox)
-        
+
 
     async def get_keywords(self) -> Iterable[Iterable[str]]:
         if not self.con: raise DBError
         data = await self.con.fetch(
-            '''SELECT (keyw) FROM keywords'''
+            '''SELECT (id, keyw) FROM keywords'''
         )
         return data
+    
+    async def get_users(self) -> Iterable[dict]:
+        if not self.con: raise DBError
+        data = await self.conf.fetch(
+            '''SELECT (account) FROM users'''
+        )
+        response = []
+        for row in data:
+            response.append(row['account'])
+        return response
 
 async def create_db(db_user: str, db_user_pass: str, db_name: str) -> Database:
     db = PGDatabase()

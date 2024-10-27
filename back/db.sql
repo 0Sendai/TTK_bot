@@ -53,8 +53,8 @@ INSERT INTO additional_text(add_text, intention_id) VALUES
 ('Для заключения договора пожалуйста, укажите детали договора.', 3);
 
 INSERT INTO users(account) VALUES
-(123456),
-(654321);
+(516111111),
+(516222222);
 
 INSERT INTO admins(admin_login, admin_password, is_admin) VALUES
 ('admin1', 'password1', true),

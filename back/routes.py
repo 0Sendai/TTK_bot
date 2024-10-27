@@ -68,9 +68,9 @@ async def mailboxes_get(request: web.Request) -> web.json_response:
     return web.json_response(response)
 
 @routes.post('/mailboxes')
-async def mailboxes_post(request: web.Request, mailbox: str) -> web.json_response:
+async def mailboxes_post(request: web.Request) -> web.json_response:
     db = request.app[db_key]
-    data = request.json()
+    data = await request.json()
     try:
         await db.new_mailbox(data['email'])
         return web.json_response({'success': True})
